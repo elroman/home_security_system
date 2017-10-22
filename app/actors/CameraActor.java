@@ -17,6 +17,7 @@ public class CameraActor
     extends AbstractActor {
 
     private final String PATH_TO_FOLDER = context().system().settings().config().getString("config.pathToFolder");
+    private final String DEVICE = context().system().settings().config().getString("config.camera_device");
 
     private Camera camera;
 
@@ -29,7 +30,7 @@ public class CameraActor
 
     @Override
     public void preStart() throws Exception {
-        camera = new Camera("/dev/video1", "640x480", PATH_TO_FOLDER, 30);
+        camera = new Camera(DEVICE, "640x480", PATH_TO_FOLDER, 30);
     }
 
     private void takePhotoCmd(TakePhotoCmd cmd) {
