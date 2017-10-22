@@ -1,4 +1,4 @@
-@(message: String)
+@(message: String)(isActive: Boolean)
 
 @main("Control panel") {
     <div class="row">
@@ -12,12 +12,21 @@
                     <div class="ibox-content" >
                         <div id="control_panel" class="project-list" style="height: 500px">
 
-                            <a href="@routes.ControlPanel.activateSecurity()">
-                                <button class="widget navy-bg">Activate Security</button>
-                            </a>
+                            @if(!isActive) {
+                                <a href="@routes.ControlPanel.activateSecurity()">
+                                    <button class="widget btn-primary">Activate Security</button>
+                                </a>
+                            }
+
+                            @if(isActive) {
+                                <a href="@routes.ControlPanel.deactivateSecurity()">
+                                    <button class="widget btn-danger">Deactivate Security</button>
+                                </a>
+                            }
+
                             <br>
                             <a href="@routes.ControlPanel.takePicture()">
-                                <button class="widget navy-bg">Take picture</button>
+                                <button class="widget btn-primary">Take picture</button>
                             </a>
 
                         </div>
@@ -27,121 +36,5 @@
         </div>
     </div>
 } {
-    @* <script>
 
-    $(document).ready(function () {
-    mouseCommandHandler();
-    keyCommandHandler();
-    });
-
-    function mouseCommandHandler() {
-    $("#button_up").click(function (event) {
-    stopClick("UP");
-    });
-    $("#button_left").click(function (event) {
-    stopClick("LEFT");
-    });
-    $("#button_right").click(function (event) {
-    stopClick("RIGHT");
-    });
-
-    $("#button_down").click(function (event) {
-    stopClick("DOWN");
-    });
-
-    /*================== */
-
-    $("#button_up").mousedown(function () {
-    startClick("UP");
-    });
-    $("#button_left").mousedown(function () {
-    startClick("LEFT");
-    });
-    $("#button_right").mousedown(function () {
-    startClick("RIGHT");
-    });
-    $("#button_down").mousedown(function () {
-    startClick("DOWN");
-    });
-    }
-
-    function keyCommandHandler() {
-
-    $(document).keydown(function (event) {
-    if (event.which == 38) {
-    startClick("UP");
-    }
-
-    if (event.which == 37) {
-    startClick("LEFT");
-    }
-
-    if (event.which == 39) {
-    startClick("RIGHT");
-    }
-
-    if (event.which == 40) {
-    startClick("DOWN");
-    }
-    }).on("keyup", function (event) {
-
-    if (event.which == 38) {
-    stopClick("UP");
-    }
-
-    if (event.which == 37) {
-    stopClick("LEFT");
-    }
-
-    if (event.which == 39) {
-    stopClick("RIGHT");
-    }
-
-    if (event.which == 40) {
-    stopClick("DOWN");
-    }
-    });
-
-    }
-
-    function startClick(evt) {
-    $("#" + evt).css('background-color', 'darkorchid');
-
-    var message = {};
-    message.cmd = "START";
-    message.key = evt;
-
-    sendCommand(message);
-    console.log(message);
-    }
-
-    function stopClick(evt) {
-    $("#" + evt).css('background-color', '#1ab394');
-
-    var message = {};
-    message.cmd = "STOP";
-    message.key = evt;
-
-    sendCommand(message);
-    console.log(message);
-    }
-
-    function sendCommand(data) {
-
-    $.ajax({
-    type: 'POST',
-    *@@*url: "@routes.PanelController.handleCommandFromPanel()",*@@*
-    async: true,
-    data: JSON.stringify(data),
-    contentType: "application/json; charset=utf-8",
-    success: function (data) {
-    console.log("success")
-    },
-    error: function (exception) {
-    console.log("output", "error");
-    }
-    });
-    }
-
-    </script>*@
 }

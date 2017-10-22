@@ -8,7 +8,7 @@ import com.pi4j.io.gpio.RaspiPin;
 import java.time.Duration;
 
 import actors.cmd.ActivationCmd;
-import actors.cmd.TakePhotoCmd;
+import actors.event.DetectedMoveEvt;
 import akka.actor.AbstractActor;
 import akka.event.LoggingReceive;
 import akka.japi.pf.ReceiveBuilder;
@@ -20,8 +20,8 @@ public class MotionSensorActor
     extends AbstractActor {
 
     private Boolean active;
-    private final GpioController gpio;
-    private final GpioPinDigitalInput input;
+    private GpioController gpio;
+    private GpioPinDigitalInput input;
 
     @Override
     public PartialFunction<Object, BoxedUnit> receive() {
@@ -31,8 +31,12 @@ public class MotionSensorActor
     }
 
     public MotionSensorActor() {
-        gpio = GpioFactory.getInstance();
-        input = gpio.provisionDigitalInputPin(RaspiPin.GPIO_11, "MyInput");
+        try {
+            gpio = GpioFactory.getInstance();
+            input = gpio.provisionDigitalInputPin(RaspiPin.GPIO_11, "MyInput");
+        } catch (UnsatisfiedLinkError ex) {
+            Logger.debug(" == UnsatisfiedLinkError == ");
+        }
     }
 
     private void setActivation(ActivationCmd cmd) {
@@ -47,10 +51,10 @@ public class MotionSensorActor
         while (active) {
             if (input.getState().isHigh()) {
                 Logger.debug("== Move detected!!!!!");
-                sender().tell(new TakePhotoCmd(), self());
+                sender().tell(new DetectedMoveEvt(), self());
             }
             try {
-                Thread.sleep(Duration.ofSeconds(1).toMillis());
+                Thread.sleep(Duration.ofSeconds(10).toMillis());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
