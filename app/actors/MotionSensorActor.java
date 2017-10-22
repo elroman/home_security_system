@@ -8,6 +8,7 @@ import com.pi4j.io.gpio.RaspiPin;
 import java.time.Duration;
 
 import actors.cmd.ActivationCmd;
+import actors.cmd.TakePhotoCmd;
 import akka.actor.AbstractActor;
 import akka.event.LoggingReceive;
 import akka.japi.pf.ReceiveBuilder;
@@ -46,6 +47,7 @@ public class MotionSensorActor
         while (active) {
             if (input.getState().isHigh()) {
                 Logger.debug("== Move detected!!!!!");
+                sender().tell(new TakePhotoCmd(), self());
             }
             try {
                 Thread.sleep(Duration.ofSeconds(1).toMillis());
