@@ -55,7 +55,7 @@ public class SecuritySystemActor
 
     private void detectedMove(DetectedMoveEvt cmd) {
         for (int i = 0; i < 5; i++) {
-            cameraActor.tell(cmd, self());
+            cameraActor.tell(new TakePhotoCmd(), self());
             try {
                 Thread.sleep(Duration.ofSeconds(1).toMillis());
             } catch (InterruptedException e) {
