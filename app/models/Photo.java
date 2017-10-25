@@ -19,7 +19,7 @@ public class Photo {
         size = pictureSize;
         directory = pictureDir;
         this.quality = quality;
-        nameFile = "pict_" + date + ".jpg";
+        nameFile = "pict_" + date.replace(" ", "_") + ".jpg";
     }
 
     public String getCommandForShot() {

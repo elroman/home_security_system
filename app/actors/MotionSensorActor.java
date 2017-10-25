@@ -54,7 +54,7 @@ public class MotionSensorActor
                 sender().tell(new DetectedMoveEvt(), self());
             }
             try {
-                Thread.sleep(Duration.ofSeconds(10).toMillis());
+                Thread.sleep(Duration.ofSeconds(20).toMillis());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
