@@ -4,8 +4,6 @@ import static akka.pattern.Patterns.pipe;
 
 import com.google.inject.Inject;
 
-import java.time.Duration;
-
 import javax.inject.Named;
 
 import actors.cmd.ActivationCmd;
@@ -19,7 +17,6 @@ import akka.event.LoggingReceive;
 import akka.japi.pf.ReceiveBuilder;
 import play.libs.F;
 import scala.PartialFunction;
-import scala.concurrent.Future;
 import scala.runtime.BoxedUnit;
 
 public class SecuritySystemActor
@@ -54,14 +51,7 @@ public class SecuritySystemActor
     }
 
     private void detectedMove(DetectedMoveEvt cmd) {
-        for (int i = 0; i < 5; i++) {
-            cameraActor.tell(new TakePhotoCmd(), self());
-            try {
-                Thread.sleep(Duration.ofSeconds(1).toMillis());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        cameraActor.tell(new TakePhotoCmd(), self());
     }
 
     private void setActivation(ActivationCmd cmd) {
