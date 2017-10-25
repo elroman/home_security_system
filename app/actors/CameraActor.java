@@ -50,7 +50,8 @@ public class CameraActor
         Photo photo = new Photo(DEVICE, PICTURE_SIZE, fullPath, DateUtil.getStringFromDateTime(photoTime), QUALITY);
         String command = photo.getCommandForShot();
 
-        Logger.debug("CameraActor: takePhotoCmd() exec command: " + command);
+        //        Logger.debug("CameraActor: takePhotoCmd() exec command: " + command);
+        Logger.debug("CameraActor: photo:", photo.getNameFile());
 
         executeCommand(command);
     }

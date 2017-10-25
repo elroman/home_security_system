@@ -40,13 +40,22 @@ public class MotionSensorActor
     }
 
     private void setActivation(ActivationCmd cmd) {
-        Logger.debug("MotionSensorActor: setActivation:  " + cmd);
+        Logger.debug("MotionSensorActor: " + cmd);
 
-        active = cmd.isActive();
-        readMotionSensor();
+        while (cmd.isActive()) {
+            if (input.getState().isHigh()) {
+                Logger.debug("== Move detected!!!!!");
+                sender().tell(new DetectedMoveEvt(), self());
+            }
+            try {
+                Thread.sleep(Duration.ofSeconds(30).toMillis());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    private void readMotionSensor() {
+    /*private void readMotionSensor() {
 
         while (active) {
             if (input.getState().isHigh()) {
@@ -54,10 +63,10 @@ public class MotionSensorActor
                 sender().tell(new DetectedMoveEvt(), self());
             }
             try {
-                Thread.sleep(Duration.ofSeconds(20).toMillis());
+                Thread.sleep(Duration.ofSeconds(30).toMillis());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 }
