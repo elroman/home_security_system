@@ -1,5 +1,7 @@
 package actors;
 
+import com.google.inject.Inject;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
@@ -7,6 +9,8 @@ import com.pi4j.io.gpio.RaspiPin;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Named;
 
 import actors.cmd.ActivationCmd;
 import actors.cmd.ReadMotionSensorCmd;
@@ -27,6 +31,10 @@ public class MotionSensorActor
     private GpioController gpio;
     private GpioPinDigitalInput input;
     private Cancellable trackerScheduler;
+
+    @Inject
+    @Named("securitySystem")
+    ActorRef securitySystem;
 
     @Override
     public PartialFunction<Object, BoxedUnit> receive() {
@@ -64,7 +72,7 @@ public class MotionSensorActor
         while (active) {
             if (input.getState().isHigh()) {
                 Logger.debug("== Move detected!!!!!");
-                sender().tell(new DetectedMoveEvt(), self());
+                securitySystem.tell(new DetectedMoveEvt(), self());
             }
             try {
                 Thread.sleep(Duration.ofSeconds(30).toMillis());
