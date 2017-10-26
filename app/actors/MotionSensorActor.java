@@ -12,6 +12,7 @@ import actors.cmd.ActivationCmd;
 import actors.cmd.ReadMotionSensorCmd;
 import actors.event.DetectedMoveEvt;
 import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.event.LoggingReceive;
 import akka.japi.pf.ReceiveBuilder;
@@ -31,7 +32,7 @@ public class MotionSensorActor
     public PartialFunction<Object, BoxedUnit> receive() {
         return LoggingReceive.create(ReceiveBuilder
                                          .match(ActivationCmd.class, this::setActivation)
-                                         /*.match(ReadMotionSensorCmd.class, this::startReadMotionSensor)*/
+                                         .match(ReadMotionSensorCmd.class, this::readMotionSensor)
                                          .build(), getContext());
     }
 
@@ -53,10 +54,12 @@ public class MotionSensorActor
         Logger.debug("MotionSensorActor: setActivation:  " + cmd);
 
         active = cmd.isActive();
-        readMotionSensor();
+        if (active) {
+            self().tell(new ReadMotionSensorCmd(), ActorRef.noSender());
+        }
     }
 
-    private void readMotionSensor() {
+    private void readMotionSensor(ReadMotionSensorCmd cmd) {
 
         while (active) {
             if (input.getState().isHigh()) {
