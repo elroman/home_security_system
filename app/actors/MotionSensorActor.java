@@ -69,17 +69,17 @@ public class MotionSensorActor
 
     private void readMotionSensor(ReadMotionSensorCmd cmd) {
         Logger.debug("== Move detected!!!!!");
-        /*while (active) {
-            if (input.getState().isHigh()) {
+        while (active) {
+           /* if (input.getState().isHigh()) {
                 Logger.debug("== Move detected!!!!!");
                 securitySystem.tell(new DetectedMoveEvt(), self());
             }
             try {
-                Thread.sleep(Duration.ofSeconds(30).toMillis());
+                Thread.sleep(Duration.ofSeconds(1).toMillis());
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-        }*/
+            }*/
+        }
     }
 
 
