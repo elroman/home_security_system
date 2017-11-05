@@ -32,17 +32,6 @@ public class CameraActor
                                          .build(), getContext());
     }
 
-/*    private void makeSeriaPhotos(TakePhotoCmd cmd) {
-        for (int i = 0; i < 5; i++) {
-            takePhotoCmd();
-            try {
-                Thread.sleep(Duration.ofSeconds(3).toMillis());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
     private void takePhotoCmd(TakePhotoCmd cmd) {
         final Date photoTime = new Date();
         final String fullPath = geFullPhotoPath(photoTime);
@@ -50,9 +39,7 @@ public class CameraActor
         Photo photo = new Photo(DEVICE, PICTURE_SIZE, fullPath, DateUtil.getStringFromDateTime(photoTime), QUALITY);
         String command = photo.getCommandForShot();
 
-        //        Logger.debug("CameraActor: takePhotoCmd() exec command: " + command);
         Logger.debug("CameraActor: photo:" + photo.getNameFile());
-
         executeCommand(command);
     }
 
@@ -68,7 +55,7 @@ public class CameraActor
             theDir.mkdir();
             return theDir.toString();
         } catch (SecurityException se) {
-            Logger.error("Problem created new folder! ", se);
+            Logger.error("Problem created new folder: " + se);
             return PATH_TO_FOLDER;
         }
     }
@@ -78,7 +65,7 @@ public class CameraActor
         try {
             final Process process = rt.exec(cmd);
             BufferedReader r = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            Thread.sleep(Duration.ofSeconds(4).toMillis());
+            Thread.sleep(Duration.ofSeconds(3).toMillis());
         } catch (IOException | InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

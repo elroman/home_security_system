@@ -1,22 +1,30 @@
 package actors;
 
+import static akka.pattern.Patterns.ask;
 import static akka.pattern.Patterns.pipe;
 
 import com.google.inject.Inject;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Named;
 
 import actors.cmd.ActivationCmd;
+import actors.cmd.ReadMotionSensorCmd;
+import actors.cmd.SendMessageCmd;
 import actors.cmd.TakePhotoCmd;
 import actors.event.DetectedMoveEvt;
 import actors.proto.GetStateReq;
 import actors.proto.GetStateRes;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
+import akka.actor.Cancellable;
 import akka.event.LoggingReceive;
 import akka.japi.pf.ReceiveBuilder;
+import play.Logger;
 import play.libs.F;
 import scala.PartialFunction;
+import scala.concurrent.duration.Duration;
 import scala.runtime.BoxedUnit;
 
 public class SecuritySystemActor
@@ -29,7 +37,12 @@ public class SecuritySystemActor
     @Named("motionSensorActor")
     ActorRef motionSensorActor;
 
+    @Inject
+    @Named("mailActor")
+    ActorRef mailActor;
+
     private Boolean active;
+    private Cancellable sendMessageScheduler;
 
     @Override
     public PartialFunction<Object, BoxedUnit> receive() {
@@ -48,6 +61,8 @@ public class SecuritySystemActor
 
     private void takePhotoCmd(TakePhotoCmd cmd) {
         cameraActor.tell(cmd, self());
+        //        mailActor.tell(new SendMessageCmd(), self());
+        createScheduler();
     }
 
     private void detectedMove(DetectedMoveEvt cmd) {
@@ -62,4 +77,32 @@ public class SecuritySystemActor
     private void getState(GetStateReq req) {
         pipe(F.Promise.pure(new GetStateRes(active)).wrapped(), getContext().dispatcher()).to(sender());
     }
+
+    private void createScheduler() {
+        if ((sendMessageScheduler == null) || sendMessageScheduler.isCancelled()) {
+            Logger.debug("Sender message scheduler was activated !");
+
+            sendMessageScheduler = getContext().system().scheduler().schedule(
+                Duration.create(1, TimeUnit.MINUTES),
+                Duration.Zero(),
+                mailActor,
+                new SendMessageCmd(),
+                getContext().dispatcher(),
+                self()
+            );
+        }
+    }
+
+    private void closeScheduler() {
+        if ((sendMessageScheduler != null) && !sendMessageScheduler.isCancelled()) {
+            Logger.debug("Sender message scheduler was deactivated !");
+            sendMessageScheduler.cancel();
+        }
+    }
+
+    @Override
+    public void postStop() {
+        closeScheduler();
+    }
+
 }

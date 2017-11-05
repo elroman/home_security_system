@@ -63,7 +63,7 @@ public class ControlPanel
     }
 
     public F.Promise<Result> takePicture() {
-        cameraActor.tell(new TakePhotoCmd(), ActorRef.noSender());
+        securitySystem.tell(new TakePhotoCmd(), ActorRef.noSender());
 
         return F.Promise.wrap(getSecuritySystemState())
             .map(resp -> (Result) ok(control_panel_page.render("Your new application is ready.", resp)))
