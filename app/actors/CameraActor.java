@@ -51,7 +51,7 @@ public class CameraActor
         String command = photo.getCommandForShot();
 
         //        Logger.debug("CameraActor: takePhotoCmd() exec command: " + command);
-        Logger.debug("CameraActor: photo:", photo.getNameFile());
+        Logger.debug("CameraActor: photo:" + photo.getNameFile());
 
         executeCommand(command);
     }
@@ -78,17 +78,11 @@ public class CameraActor
         try {
             final Process process = rt.exec(cmd);
             BufferedReader r = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while (true) {
-                line = r.readLine();
-                if (line == null) {
-                    break;
-                }
-                System.out.println(line);
-            }
-        } catch (IOException e) {
+            Thread.sleep(Duration.ofSeconds(4).toMillis());
+        } catch (IOException | InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 }
+

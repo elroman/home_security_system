@@ -57,7 +57,7 @@ public class MotionSensorActor
     private void readMotionSensor(ReadMotionSensorCmd cmd) {
         Logger.debug("try check motion sensor");
         if ((input != null) && input.getState().isHigh()) {
-            Logger.debug("Move detected:", DateUtil.getStringFromDateTime(new Date()));
+            Logger.debug("Move detected:" + DateUtil.getStringFromDateTime(new Date()));
             securitySystem.tell(new DetectedMoveEvt(), self());
         }
     }
