@@ -45,11 +45,6 @@ public class MotionSensorActor
                                          .build(), getContext());
     }
 
-    @Override
-    public void postStop() {
-        trackerScheduler.cancel();
-    }
-
     public MotionSensorActor() {
         try {
             gpio = GpioFactory.getInstance();
@@ -59,18 +54,9 @@ public class MotionSensorActor
         }
     }
 
-    //    private void setActivation(ActivationCmd cmd) {
-    //        Logger.debug("MotionSensorActor: setActivation:  " + cmd);
-    //
-    //        active = cmd.isActive();
-    //
-    //        if (active) {
-    //            self().tell(new ReadMotionSensorCmd(), ActorRef.noSender());
-    //        }
-    //    }
-
     private void readMotionSensor(ReadMotionSensorCmd cmd) {
-        if (input.getState().isHigh()) {
+        Logger.debug("try check motion sensor");
+        if ((input != null) && input.getState().isHigh()) {
             Logger.debug("Move detected:", DateUtil.getStringFromDateTime(new Date()));
             securitySystem.tell(new DetectedMoveEvt(), self());
         }
@@ -78,30 +64,36 @@ public class MotionSensorActor
 
     private void setActivation(ActivationCmd cmd) {
         if (cmd.isActive()) {
-            Logger.debug("Motion sensor was activated !");
-            if (trackerScheduler.isCancelled()) {
-                trackerScheduler = getContext().system().scheduler().schedule(
-                    Duration.Zero(),
-                    Duration.create(1, TimeUnit.SECONDS),
-                    self(),
-                    new ReadMotionSensorCmd(),
-                    getContext().dispatcher(),
-                    null
-                );
-            } else {
-                Logger.debug("Motion sensor was deactivated!");
-                trackerScheduler.cancel();
-            }
+            createScheduler();
+        } else {
+            closeScheduler();
         }
     }
-/*
-    private void startReadMotionSensor(ReadMotionSensorCmd cmd) {
 
-        for (int i = 0; i < 10; i++) {
-            if (input.getState().isHigh()) {
-                Logger.debug("== Move detected!!!!!");
-                sender().tell(new DetectedMoveEvt(), self());
-            }
+    @Override
+    public void postStop() {
+        closeScheduler();
+    }
+
+    private void createScheduler() {
+        if ((trackerScheduler == null) || trackerScheduler.isCancelled()) {
+            Logger.debug("Motion sensor was activated !");
+
+            trackerScheduler = getContext().system().scheduler().schedule(
+                Duration.Zero(),
+                Duration.create(1, TimeUnit.SECONDS),
+                self(),
+                new ReadMotionSensorCmd(),
+                getContext().dispatcher(),
+                null
+            );
         }
-    }*/
+    }
+
+    private void closeScheduler() {
+        if ((trackerScheduler != null) && !trackerScheduler.isCancelled()) {
+            Logger.debug("Motion sensor was deactivated!");
+            trackerScheduler.cancel();
+        }
+    }
 }

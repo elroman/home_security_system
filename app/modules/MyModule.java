@@ -16,5 +16,7 @@ public class MyModule
         bindActor(SecuritySystemActor.class, "securitySystem");
         bindActor(CameraActor.class, "cameraActor");
         bindActor(MotionSensorActor.class, "motionSensorActor");
+        //        bind(GpioService.class).annotatedWith(Names.named("gpioService")).to(GpioServiceImpl.class);
+
     }
 }
