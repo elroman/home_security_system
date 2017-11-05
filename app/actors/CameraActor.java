@@ -28,11 +28,11 @@ public class CameraActor
     @Override
     public PartialFunction<Object, BoxedUnit> receive() {
         return LoggingReceive.create(ReceiveBuilder
-                                         .match(TakePhotoCmd.class, this::makeSeriaPhotos)
+                                         .match(TakePhotoCmd.class, this::takePhotoCmd)
                                          .build(), getContext());
     }
 
-    private void makeSeriaPhotos(TakePhotoCmd cmd) {
+/*    private void makeSeriaPhotos(TakePhotoCmd cmd) {
         for (int i = 0; i < 5; i++) {
             takePhotoCmd();
             try {
@@ -41,9 +41,9 @@ public class CameraActor
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 
-    private void takePhotoCmd() {
+    private void takePhotoCmd(TakePhotoCmd cmd) {
         final Date photoTime = new Date();
         final String fullPath = geFullPhotoPath(photoTime);
 
